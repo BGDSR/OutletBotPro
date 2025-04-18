@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Router
-from handlers import user, admin
+from app.handlers import user, admin
 import asyncio
 import os
 
