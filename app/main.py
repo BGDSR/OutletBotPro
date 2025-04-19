@@ -3,11 +3,11 @@ from aiogram.types import Message
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Router
-from bots.handlers import user, admin
+from app.handlers import user, admin
 import asyncio
 import os
 
-from bots.database.db import create_db
+from app.database.db import create_db
 
 TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=TOKEN, parse_mode=ParseMode.HTML)
