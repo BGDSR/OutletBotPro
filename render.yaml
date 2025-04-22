@@ -2,12 +2,16 @@ services:
   - type: worker
     name: outletbot
     runtime: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python app/main.py"
+    buildCommand: |
+      pip install -r requirements.txt
+      alembic upgrade head
+    startCommand: "python -m app.main"
     envVars:
       - key: BOT_TOKEN
-        sync: false
+        required: true
       - key: DATABASE_URL
-        sync: false
+        required: true
       - key: ADMIN_IDS
-        sync: false
+        value: "123456789,987654321"  # Пример
+      - key: REDIS_URL
+        value: "redis://redis:6379/0"
