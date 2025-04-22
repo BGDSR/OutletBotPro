@@ -1,2 +1,2 @@
-# app/__init__.py
-__all__ = ['handlers', 'database', 'config']
+from .db import engine, AsyncSessionLocal, Base, get_session
+__all__ = ['engine', 'AsyncSessionLocal', 'Base', 'get_session']
