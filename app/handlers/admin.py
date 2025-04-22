@@ -1,4 +1,5 @@
 from aiogram import Router, types
+from aiogram.filters import Command
 from app.config import ADMIN_IDS
 from app.database.db import AsyncSessionLocal
 from sqlalchemy import select
@@ -6,7 +7,7 @@ from app.database.models import User
 
 router = Router()
 
-@router.message(commands=["stats"])
+@router.message(Command("stats"))
 async def stats_cmd(message: types.Message):
     if message.from_user.id not in ADMIN_IDS:
         return await message.answer("Нет доступа.")
