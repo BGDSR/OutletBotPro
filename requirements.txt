@@ -11,3 +11,4 @@ python-multipart==0.0.6  # Для обработки данных форм
 alembic==1.13.1  # Для миграций БД
 pytest-asyncio==0.23.5  # Для асинхронных тестов
 fastapi>=0.95.0  # Для Depends()
+fastapi>=0.95.0
