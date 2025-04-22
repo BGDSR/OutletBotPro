@@ -5,7 +5,7 @@ import asyncio
 import logging
 from app.config.config import config
 from app.database.db import create_db, shutdown
-from app.handlers import user_router, admin_router  # Изменён импорт
+from app.handlers import user_router, admin_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,6 +17,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+async def on_startup():
+    logger.info("Initializing database...")
+    await create_db()
+
+async def on_shutdown():
+    logger.info("Shutting down...")
+    await shutdown()
+
 async def main():
     try:
         storage = RedisStorage.from_url(config.REDIS_URL)
@@ -26,8 +34,10 @@ async def main():
         dp.include_router(admin_router)
         dp.include_router(user_router)
 
-        await create_db()
-        logger.info("Bot started")
+        dp.startup.register(on_startup)
+        dp.shutdown.register(on_shutdown)
+
+        logger.info("Bot is starting...")
         await dp.start_polling(bot)
     except Exception as e:
         logger.critical(f"Failed to start: {e}")
