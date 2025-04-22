@@ -1,2 +1,2 @@
-from .db import engine, AsyncSessionLocal, Base, get_session
-__all__ = ['engine', 'AsyncSessionLocal', 'Base', 'get_session']
+from .config import config
+__all__ = ['config']
