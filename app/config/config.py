@@ -24,11 +24,16 @@ class Config:
         return url
 
     @property
+    def REDIS_URL(self):
+        url = os.getenv("REDIS_URL")
+        if not url:
+            logger.error("REDIS_URL не задан в .env")
+            raise ValueError("REDIS_URL не задан")
+        return url
+
+    @property
     def ADMIN_IDS(self):
         ids = os.getenv("ADMIN_IDS", "")
-        if not ids:
-            logger.warning("ADMIN_IDS не заданы в .env")
-            return []
-        return list(map(int, ids.split(",")))
+        return [int(i) for i in ids.split(",")] if ids else []
 
 config = Config()
