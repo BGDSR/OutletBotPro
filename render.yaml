@@ -19,3 +19,4 @@ services:
         fromService:
           name: your-redis
           type: redis
+        required: true
