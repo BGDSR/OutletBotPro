@@ -1,52 +1,40 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.exc import SQLAlchemyError
-from app.config import config  # Используем единый конфиг
+from app.config.config import config  # Исправленный импорт
 import logging
 from typing import AsyncGenerator
 
-# Настройка логгирования
 logger = logging.getLogger(__name__)
 
-# Инициализация движка БД
 engine = create_async_engine(
     config.DATABASE_URL,
-    echo=False,  # В продакшене False, для отладки можно включить
-    pool_pre_ping=True,  # Проверка соединения перед использованием
-    pool_recycle=3600,   # Пересоздание соединений каждый час
-    pool_size=20,        # Размер пула соединений
-    max_overflow=10,     # Максимальное количество переполнений
+    echo=True,  # Для дебага на Render
+    pool_pre_ping=True,
+    pool_recycle=3600,
+    pool_size=20,
+    max_overflow=10,
     connect_args={
-        "command_timeout": 60,  # Таймаут подключения 60 сек
-        "server_settings": {
-            "application_name": "telegram_bot"  # Идентификатор в PG
-        }
+        "command_timeout": 60,
+        "server_settings": {"application_name": "telegram_bot"}
     }
 )
 
-# Фабрика сессий с настройками
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
-    expire_on_commit=False,  # Не истекать после коммита
+    expire_on_commit=False,
     autoflush=False,
     future=True
 )
 
 Base = declarative_base()
 
-async def create_db() -> None:
-    """Создание всех таблиц в БД"""
-    try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        logger.info("Database tables created successfully")
-    except SQLAlchemyError as e:
-        logger.error(f"Error creating database tables: {e}")
-        raise
+async def create_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    """Генератор сессий для Dependency Injection"""
     async with AsyncSessionLocal() as session:
         try:
             yield session
@@ -58,8 +46,6 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
 
-async def shutdown() -> None:
-    """Корректное закрытие соединений при остановке"""
+async def shutdown():
     logger.info("Closing database connections...")
     await engine.dispose()
-    logger.info("Database connections closed")
