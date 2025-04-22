@@ -1,1 +1,21 @@
-startCommand: "python -m app.main"
+services:
+  - type: worker
+    name: outletbot
+    runtime: python
+    buildCommand: |
+      pip install -r requirements.txt
+      alembic upgrade head
+    startCommand: "python -m app.main"
+    envVars:
+      - key: BOT_TOKEN
+        required: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: your-db-name
+          property: connectionString
+      - key: ADMIN_IDS
+        value: "123,456"  # Ваши реальные ID через запятую
+      - key: REDIS_URL
+        fromService:
+          name: your-redis
+          type: redis
